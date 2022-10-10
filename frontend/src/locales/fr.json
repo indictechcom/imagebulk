@@ -1,0 +1,23 @@
+{
+  "@metadata": {
+    "authors": ["Enow Enow"]
+  },
+  "add-images-button": "Ajouter des images",
+  "cat-placeholder": "Catégorie:Photos of Earth by Apollo spacecraft",
+  "lable-images-list": "Liste des images",
+  "start-zipping-button": "Lancer la compression",
+  "file-name": "Dossier:The Earth seen from Apollo 17.jpg",
+  "notes": "Remarques",
+  "changelanguage": "Changer de Langue",
+  "notes-1": "1. Actuellement, ça fonctionne sur Wikimedia Commons seulement pour 50 fichiers à la fois.",
+  "notes-2": "2. Dans la liste d'images, n'écrivez qu'un seul fichier sur une seule ligne. Si la ligne dépasse, supprimez-la.",
+  "title-project": "Téléchargement groupé d'images - Wikimedia Commons",
+  "nav-name": "Image Bulk",
+  "button-save": "Enregistrer",
+  "button-cancel": "Annuler",
+  "my-language": "Ma langue",
+  "download": "Télécharger",
+  "loading": "Chargement en cours",
+  "message": "Veuillez patienter jusqu'à ce que le statut soit RÉUSSI",
+  "status": "Statut"
+}
