@@ -1,0 +1,73 @@
+# using docker-compose version 1
+services:
+  web:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+    volumes: ['./:/app']
+  worker:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: celery -A tasks worker -l info -E 
+    environment:
+      - CELERY_BROKER_URL=redis://redis
+      - CELERY_RESULT_BACKEND=redis://redis
+    depends_on:
+      - redis
+    volumes: ['./:/queue']
+  monitor:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "5555:5555"
+    command: ['celery', '-A', 'tasks', 'worker']
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - worker 
+    volumes: ['./:/queue']
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+# had to comment this for the mean time, for the containerization to work
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: imagebulk.worker
+#   namespace: tool-imagebulk
+#   labels:
+#     name: imagebulk.worker
+#     toolforge: tool
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       name: imagebulk.worker
+#       toolforge: tool
+#   template:
+#     metadata:
+#       labels:
+#         name: imagebulk.worker
+#         toolforge: tool
+#     spec:
+#       containers:
+#         - name: bot
+#           image: docker-registry.tools.wmflabs.org/toolforge-python37-sssd-base:latest
+#           command: [ "sh" , "/data/project/imagebulk/www/python/src/run.sh" ]
+#           workingDir: /data/project/imagebulk/www/python/src/
+#           env:
+#             - name: HOME
+#               value: /data/project/imagebulk
+#           imagePullPolicy: Always
