@@ -43,9 +43,9 @@ def createZip(imageList):
             zipf.write(filename=fileZipPath, arcname=file)
         zipf.close()
 
-        # Remove temporary directory
-        shutil.rmtree( tempDir )
-
+        # Remove temporary directory  =>=> Removing this will bug the system 
+        # shutil.rmtree( tempDir )
+    
         return (tempDir + '.zip').replace("temp/", "")
     else:
         return -1
