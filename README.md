@@ -12,8 +12,10 @@ Imagebulk
 3. `python3 -m venv venv`
 4. `source venv/bin/activate`
 5. `pip install -r requirements.txt`
-7. Run: `python3 app.py`
-7. Open http://127.0.0.1:5000/
+6. `docker-compose -f docker-compose.yml up --build`
+7. `docker run --name imagebulk`
+8. Run: `python3 app.py`
+9. Open http://127.0.0.1:5000/
 
 ## Author
 * Jay Prakash

@@ -2,7 +2,7 @@ from celery import Celery
 
 PRODUCTION = True
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_DEFAULT_QUEUE = "imagebulk.default"
+CELERY_DEFAULT_QUEUE = "imagebulk"
 
 if PRODUCTION:
     REDIS_PASSWORD=''
