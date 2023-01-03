@@ -24,10 +24,20 @@ def index():
 
 @app.route('/sendFile/<string:id>')
 def sendFile(id):
-    # Open and read zip file
-    with open(os.path.join('temp', id), 'rb') as f:
-        data = f.readlines()
+    # base temp directory
+    tempDir = os.path.abspath('temp')
+    # absolute path of the zip file to download
+    zipfile = os.path.join(tempDir, id)
     
+    data = []
+    
+    if os.path.exists(zipfile):
+        # Open and read zip file
+        with open(zipfile, 'rb') as f:
+            data = f.readlines()
+    else:
+        print("Error with tempDir: ", tempDir)
+            
     # Returning response with zip file
     return Response(data, headers={
         'Content-Type': 'application/zip',
