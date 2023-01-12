@@ -9,13 +9,10 @@ Imagebulk
 
 1. Clone repo: `git clone https://github.com/Jayprakash-SE/imagebulk.git`
 2. `cd imagebulk`
-3. `python3 -m venv venv`
-4. `source venv/bin/activate`
-5. `pip install -r requirements.txt`
-6. `docker-compose -f docker-compose.yml up --build`
-7. `docker run --name imagebulk`
-8. Run: `python3 app.py`
-9. Open http://127.0.0.1:5000/
+3. To build docker images: `docker-compose build`
+4. To run the container: `docker-compose up -d`
+5. Open http://127.0.0.1:5000/
+6. To stop and remove container: `docker-compose down`
 
 ## Author
 * Jay Prakash
