@@ -16,6 +16,9 @@ _ = locales.get_message
 def index():
     if request.method == "POST":
         imageList = request.form.get("imageNameList")
+
+        # Creating list of image name
+        imageList = list( filter( None, imageList.splitlines() ) )
         zipFile = createZip.delay( imageList )
         return redirect( url_for("task", id=zipFile.id ) )
 

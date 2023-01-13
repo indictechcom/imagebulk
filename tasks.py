@@ -1,21 +1,19 @@
 import requests
 import zipfile
-import datetime
 import shutil
 import os
-import time
 
 from celeryWorker import app
+from util import getHeader, getUniqueName
 
 
 @app.task()
 def createZip(imageList):
-    time.sleep( 15 )
     param = {
         "action": "query",
         "format": "json",
         "prop": "imageinfo",
-        "titles": '|'.join( imageList.splitlines() ),
+        "titles": '|'.join( imageList ),
         "iiprop": "url"
     }
 
@@ -32,9 +30,10 @@ def createZip(imageList):
         # Download the files
         for i in d.values():
             imageUrl = i["imageinfo"][0]["url"]
-            r = requests.get(imageUrl, allow_redirects=True)
+            r = requests.get(imageUrl, allow_redirects=True, headers= getHeader())
             fileName = i["title"].replace("File:", "")
-            open( tempDir + "/" + fileName, 'wb').write(r.content)
+            if r.status_code == 200:
+                open( tempDir + "/" + fileName, 'wb').write(r.content)
 
         # Creating zip file of downloaded files
         zipf = zipfile.ZipFile( tempDir + '.zip', 'w', zipfile.ZIP_DEFLATED)
@@ -49,9 +48,3 @@ def createZip(imageList):
         return (tempDir + '.zip').replace("temp/", "")
     else:
         return -1
-
-
-def getUniqueName():
-    # Create a unique file name based on time
-    currentTime = str(datetime.datetime.now())
-    return currentTime.replace(':', '_').replace(' ', '_').replace('-', '_')

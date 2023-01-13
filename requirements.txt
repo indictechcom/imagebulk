@@ -2,3 +2,5 @@ flask
 requests
 celery
 flask-jsonlocale
+redis
+gunicorn

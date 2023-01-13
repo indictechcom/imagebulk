@@ -1,0 +1,29 @@
+# using docker-compose version 1
+services:
+  web:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-api
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - worker
+
+  worker:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-worker
+    restart: always
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
