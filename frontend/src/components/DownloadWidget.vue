@@ -17,8 +17,7 @@
 </template>
 
 <script>
-import axios from "axios";
-
+import { mapActions, mapMutations } from "vuex";
 export default {
   props: {
     filename: {
@@ -32,6 +31,18 @@ export default {
     image: "",
   }),
 
+  methods: {
+    ...mapActions(["getFileToDownload"]),
+    ...mapMutations(["SET_IMG_URL"]),
+  },
+
+  computed: {
+    imageUrl() {
+      console.log("imageUrl: ", this.$store.state.file.imageURL);
+      return this.$store.state.file.imageURL;
+    },
+  },
+
   created() {
     let options = {
       responseType: "blob",
@@ -41,12 +52,8 @@ export default {
         this.progress = progress;
       },
     };
-    axios
-      .get("https://picsum.photos/350/350", options)
-      .then((res) => {
-        this.image = URL.createObjectURL(res.data);
-      })
-      .catch((err) => console.error(err));
+
+    this.getFileToDownload(options);
   },
 };
 </script>

@@ -1,14 +1,40 @@
 <template>
   <v-card>
     <v-tabs fixed-tabs v-model="tab" bg-color="green-darken-2">
-      <v-tab value="category">Category</v-tab>
       <v-tab value="file">File</v-tab>
+      <v-tab value="category">Category</v-tab>
     </v-tabs>
 
     <v-card-text>
       <v-window v-model="tab">
+        <v-window-item value="file">
+          <v-form
+            ref="form"
+            v-model="valid"
+            lazy-validation
+            @submit.prevent="loadFileImage"
+          >
+            <v-text-field
+              v-model="filename"
+              :rules="filenameRules"
+              hint="Hint, File:The Earth seen from Apollo 17.jpg"
+              required
+              variant="outlined"
+            ></v-text-field>
+
+            <v-btn color="success" class="me-4 mt-4" @click="loadFileImage">
+              Load
+            </v-btn>
+          </v-form>
+        </v-window-item>
+
         <v-window-item value="category">
-          <v-form ref="form" v-model="valid" lazy-validation>
+          <v-form
+            ref="form"
+            v-model="valid"
+            lazy-validation
+            @submit.prevent="loadCategoryImages"
+          >
             <v-text-field
               v-model="category"
               :rules="categoryRules"
@@ -25,22 +51,6 @@
             </v-btn>
           </v-form>
         </v-window-item>
-
-        <v-window-item value="file">
-          <v-form ref="form" v-model="valid" lazy-validation>
-            <v-text-field
-              v-model="filename"
-              :rules="filenameRules"
-              hint="Hint, File:The Earth seen from Apollo 17.jpg"
-              required
-              variant="outlined"
-            ></v-text-field>
-
-            <v-btn color="success" class="me-4 mt-4" @click="loadFileImage">
-              Load
-            </v-btn>
-          </v-form>
-        </v-window-item>
       </v-window>
     </v-card-text>
   </v-card>
@@ -48,6 +58,7 @@
 
 <script>
 import axios from "axios";
+import { mapMutations } from "vuex";
 
 export default {
   data: () => ({
@@ -67,7 +78,12 @@ export default {
   }),
 
   methods: {
-    loadFileImage() {},
+    ...mapMutations(["SET_FILE_TO_DOWNLOAD"]),
+
+    loadFileImage() {
+      console.log("file download: ", this.filename.split("File:")[1].trim());
+      this.SET_FILE_TO_DOWNLOAD(this.filename.split("File:")[1].trim());
+    },
 
     loadCategoryImages() {
       if (this.category !== "Category:") {
