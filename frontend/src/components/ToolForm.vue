@@ -11,6 +11,7 @@
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-text-field
               v-model="category"
+              placeholder="Category:"
               :rules="categoryRules"
               hint="Hint, Category:Photos of Earth by Apollo spacecraft"
               variant="outlined"
@@ -31,6 +32,7 @@
             <v-text-field
               v-model="filename"
               :rules="filenameRules"
+              placeholder="File:"
               hint="Hint, File:The Earth seen from Apollo 17.jpg"
               required
               variant="outlined"
@@ -53,12 +55,12 @@ export default {
   data: () => ({
     tab: null,
     valid: true,
-    category: "Category:",
+    category: "",
     categoryRules: [
       (v) =>
         (v && v.length >= 10) || "Category must not be less than 10 characters",
     ],
-    filename: "File:",
+    filename: "",
     filenameRules: [
       (v) =>
         (v && v.length >= 10) ||
@@ -70,25 +72,26 @@ export default {
     loadFileImage() {},
 
     loadCategoryImages() {
-      if (this.category !== "Category:") {
+      if (this.category !== "") {
         let params = {
           action: "query",
-          format: "jsonp",
+          format: "json",
           list: "categorymembers",
           cmtitle: "Category:" + this.category.replace("Category:", ""),
           cmprop: "title",
           cmnamespace: "6",
           cmtype: "file",
-          cmlimit: "50",
+          cmlimit: "250",
           origin: "*",
         };
 
         axios
-          .get("https://commons.wikimedia.org/w/api.php", params, {
-            headers: {
+          .get("https://commons.wikimedia.org/w/api.php", {
+            "headers": {
               "User-Agent": "Imagebulk tool",
               "Content-Type": "application/json",
             },
+            "params": params
           })
           .then((res) => {
             console.log("category images: ", res);
