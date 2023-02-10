@@ -64,12 +64,12 @@ export default {
   data: () => ({
     tab: null,
     valid: true,
-    category: "Category:",
+    category: "",
     categoryRules: [
       (v) =>
         (v && v.length >= 10) || "Category must not be less than 10 characters",
     ],
-    filename: "File:",
+    filename: "",
     filenameRules: [
       (v) =>
         (v && v.length >= 10) ||
@@ -86,25 +86,26 @@ export default {
     },
 
     loadCategoryImages() {
-      if (this.category !== "Category:") {
+      if (this.category !== "") {
         let params = {
           action: "query",
-          format: "jsonp",
+          format: "json",
           list: "categorymembers",
           cmtitle: "Category:" + this.category.replace("Category:", ""),
           cmprop: "title",
           cmnamespace: "6",
           cmtype: "file",
-          cmlimit: "50",
+          cmlimit: "250",
           origin: "*",
         };
 
         axios
-          .get("https://commons.wikimedia.org/w/api.php", params, {
+          .get("https://commons.wikimedia.org/w/api.php", {
             headers: {
               "User-Agent": "Imagebulk tool",
               "Content-Type": "application/json",
             },
+            params: params,
           })
           .then((res) => {
             console.log("category images: ", res);
