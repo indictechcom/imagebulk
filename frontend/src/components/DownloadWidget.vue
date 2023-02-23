@@ -1,23 +1,13 @@
 <template>
   <div class="py-5 d-flex justify- align-center position-relative">
     <div class="text-area d-flex justify-start align-center">
-      <v-img :src="image" height="50" alt="" v-if="image" />
-      <p class="ml-2 filetext">{{ filename }}</p>
+      <v-img :src="imageUrl" height="150" alt="" v-if="imageUrl" />
     </div>
-    <v-progress-linear
-      width="500px"
-      style="margin-right: 174px; left: 40%"
-      color="blue-lighten-3"
-      v-model="progress"
-      height="15"
-    >
-      <strong>{{ Math.ceil(progress) }}%</strong>
-    </v-progress-linear>
   </div>
 </template>
 
 <script>
-import { mapActions, mapMutations } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 export default {
   props: {
     filename: {
@@ -33,27 +23,43 @@ export default {
 
   methods: {
     ...mapActions(["getFileToDownload"]),
-    ...mapMutations(["SET_IMG_URL"]),
   },
 
   computed: {
+    ...mapGetters(["getFiles"]),
+
     imageUrl() {
-      console.log("imageUrl: ", this.$store.state.file.imageURL);
-      return this.$store.state.file.imageURL;
+      console.log("imag files: ", this.getFiles);
+
+      let imageLink = "";
+
+      this.getFiles.forEach((file) => {
+        if (file.title == this.filename) {
+          console.log("imageUrl: ", file.url);
+          imageLink = file.url;
+        }
+      });
+
+      return imageLink;
     },
   },
 
   created() {
     let options = {
-      responseType: "blob",
-      onDownloadProgress: (progressEvent) => {
-        console.log(progressEvent);
-        const progress = (progressEvent.loaded / progressEvent.total) * 100;
-        this.progress = progress;
-      },
+      // responseType: "blob",
+      // onDownloadProgress: (progressEvent) => {
+      //   console.log(progressEvent);
+      //   const progress = (progressEvent.loaded / progressEvent.total) * 100;
+      //   this.progress = progress;
+      // },
+      // headers: {
+      //   "User-Agent": "Imagebulk tool",
+      //   "Content-Type": "application/json",
+      // },
+      // params,
     };
 
-    this.getFileToDownload(options);
+    this.getFileToDownload(this.filename);
   },
 };
 </script>

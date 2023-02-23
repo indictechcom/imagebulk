@@ -1,31 +1,31 @@
 <template>
-  <v-container class="px-10">
+  <v-container class="px-10" id="fileDownloadArea">
     <!-- grid and download-button section -->
 
     <!-- file download area -->
-    <v-row>
-      <v-col cols="12" v-if="currentFile">
-        <download-widget
-          :filename="file"
-          v-for="file in getFilesToDownload"
-          :key="file"
-        />
-
-        <v-btn
-          class="float-right my-5"
-          :loading="loading"
-          :disabled="loading"
-          color="info"
-          @click="load()"
-          >Download
-          <template v-slot:loader>
-            <span class="custom-loader">
-              <v-icon light>mdi-cached</v-icon>
-            </span>
-          </template>
-        </v-btn>
+    <v-row v-if="filesToDownload">
+      <v-col
+        cols="3"
+        v-for="(file, index) in filesToDownload"
+        :key="file + index"
+      >
+        <download-widget :filename="file" />
       </v-col>
     </v-row>
+
+    <v-btn
+      class="float-right my-5"
+      :loading="loading"
+      :disabled="loading"
+      color="info"
+      @click="load()"
+      >Download
+      <template v-slot:loader>
+        <span class="custom-loader">
+          <v-icon light>mdi-cached</v-icon>
+        </span>
+      </template>
+    </v-btn>
   </v-container>
 </template>
 
@@ -37,7 +37,7 @@ export default {
   components: { DownloadWidget },
 
   computed: {
-    ...mapGetters(["currentFile", "getFileLength", "getFilesToDownload"]),
+    ...mapGetters(["filesToDownload", "getFileLength"]),
   },
 
   data: () => ({

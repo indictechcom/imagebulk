@@ -1,59 +1,51 @@
 <template>
-  <v-card>
-    <v-tabs fixed-tabs v-model="tab" bg-color="green-darken-2">
-      <v-tab value="file">File</v-tab>
-      <v-tab value="category">Category</v-tab>
-    </v-tabs>
+  <v-col cols="8" class="mt-2">
+    <v-card color="secondary" class="pa-1">
+      <v-card-text>
+        <v-form
+          ref="form"
+          v-model="valid"
+          lazy-validation
+          @submit.prevent="loadFiles"
+          class="pa-10"
+        >
+          <div class="mt-1 mb-6 d-flex align-center justify-center">
+            <v-icon size="large" class="mr-1">mdi-link-variant</v-icon>
+            <h2>Enter URL</h2>
+          </div>
+          <v-text-field
+            id="commonsField"
+            v-model="commonsURL"
+            :rules="rules"
+            class="mb-5"
+            hint="The link of the image file or category from commons"
+            required
+            variant="flat"
+            bg-color="white"
+            clearable
+            clear-icon="mdi-close"
+            autofocus
+            density="compact"
+            persistent-clear
+            persistent-hint
+            placeholder="https://commons.wikimedia.org/Category:SpaceX"
+          ></v-text-field>
 
-    <v-card-text>
-      <v-window v-model="tab">
-        <v-window-item value="file">
-          <v-form
-            ref="form"
-            v-model="valid"
-            lazy-validation
-            @submit.prevent="loadFileImage"
-          >
-            <v-text-field
-              v-model="filename"
-              :rules="filenameRules"
-              hint="Hint, File:The Earth seen from Apollo 17.jpg"
-              required
-              variant="outlined"
-            ></v-text-field>
-
-            <v-btn color="success" class="me-4 mt-4" @click="loadFileImage">
-              Load
-            </v-btn>
-          </v-form>
-        </v-window-item>
-
-        <v-window-item value="category">
-          <v-form
-            ref="form"
-            v-model="valid"
-            lazy-validation
-            @submit.prevent="loadCategoryImages"
-          >
-            <v-text-field
-              v-model="category"
-              :rules="categoryRules"
-              hint="Hint, Category:Photos of Earth by Apollo spacecraft"
-              variant="outlined"
-            ></v-text-field>
-
+          <div class="text-center mt-8">
             <v-btn
               color="success"
-              class="me-4 mt-4"
-              @click="loadCategoryImages"
+              prepend-icon="mdi-progress-download"
+              width="175px"
+              class="text-white"
+              @click="loadFiles"
             >
               Load
             </v-btn>
-          </v-form>
-        </v-window-item>
-      </v-window>
-    </v-card-text>
-  </v-card>
+          </div>
+        </v-form>
+      </v-card-text>
+    </v-card>
+  </v-col>
 </template>
 
 <script>
@@ -62,59 +54,63 @@ import { mapMutations } from "vuex";
 
 export default {
   data: () => ({
-    tab: null,
-    valid: true,
-    category: "",
-    categoryRules: [
+    commonsURL: "",
+    rules: [
+      (v) => !!v || "Required.",
       (v) =>
-        (v && v.length >= 10) || "Category must not be less than 10 characters",
-    ],
-    filename: "",
-    filenameRules: [
-      (v) =>
-        (v && v.length >= 10) ||
-        "File Name must not be less than 10 characters",
+        /https:\/\/commons.wikimedia.org\/[\w!?/\+\-_~=;\.,*&@#$%\(\)\'\[\]]+/.test(
+          v
+        ) || "Please enter a valid commons URL",
     ],
   }),
 
   methods: {
-    ...mapMutations(["SET_FILE_TO_DOWNLOAD"]),
+    ...mapMutations(["SET_FILE_TO_DOWNLOAD", "SET_CATEGORY_TO_DOWNLOAD"]),
+
+    scrollToElement(options) {
+      const el = document.getElementById("fileDownloadArea");
+
+      if (el) {
+        el.scrollIntoView(options);
+      }
+    },
+
+    loadFiles() {
+      if (this.commonsURL.includes("Category")) {
+        this.loadCategoryImages();
+      }
+
+      if (this.commonsURL.includes("File")) {
+        this.loadFileImage();
+        this.scrollToElement({ behavior: "smooth" });
+      }
+    },
 
     loadFileImage() {
-      console.log("file download: ", this.filename.split("File:")[1].trim());
-      this.SET_FILE_TO_DOWNLOAD(this.filename.split("File:")[1].trim());
+      this.SET_FILE_TO_DOWNLOAD(this.commonsURL.split("File:")[1].trim());
     },
 
     loadCategoryImages() {
-      if (this.category !== "") {
-        let params = {
-          action: "query",
-          format: "json",
-          list: "categorymembers",
-          cmtitle: "Category:" + this.category.replace("Category:", ""),
-          cmprop: "title",
-          cmnamespace: "6",
-          cmtype: "file",
-          cmlimit: "250",
-          origin: "*",
-        };
-
-        axios
-          .get("https://commons.wikimedia.org/w/api.php", {
-            headers: {
-              "User-Agent": "Imagebulk tool",
-              "Content-Type": "application/json",
-            },
-            params: params,
-          })
-          .then((res) => {
-            console.log("category images: ", res);
-          })
-          .catch((err) => {
-            console.log("error: ", err);
-          });
-      }
+      this.SET_CATEGORY_TO_DOWNLOAD(
+        this.commonsURL.split("Category:")[1].trim()
+      );
     },
   },
 };
 </script>
+
+<style scoped>
+form.v-form {
+  border: 2px dotted #f5f5f5d3;
+  border-radius: 5px;
+  background-color: #1976d2;
+}
+button.v-btn {
+  color: white !important;
+  font-weight: bold;
+}
+
+div#commonsField-messages {
+  opacity: 1;
+}
+</style>

@@ -90,4 +90,7 @@ export default {
   font-size: 25px !important;
   cursor: pointer;
 }
+.v-text-field input#commonsField {
+  text-align: center !important;
+}
 </style>

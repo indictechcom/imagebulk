@@ -3,7 +3,8 @@ import axios from "axios";
 
 const state = {
     filesToDownload: [],
-    imageURL: "",
+    imageInfo: {},
+    files: []
 }
 
 const mutations = {
@@ -12,28 +13,50 @@ const mutations = {
         state.filesToDownload.unshift(payload);
     },
 
-    SET_IMAGE_URL(state, payload) {
-        state.imageURL = payload;
+    SET_IMAGE_INFO(state, payload) {
+        state.imageInfo = payload;
+        state.files.unshift(payload)
     }
 }
 
 const getters = {
-    getFilesToDownload: (state) => state.filesToDownload,
+    filesToDownload: (state) => state.filesToDownload,
 
     getFileLength: (state) => state.filesToDownload.length,
 
-    currentFile: (state) => state.filesToDownload[0],
-
-    getImageURL: (state) => state.imageURL
+    getFiles: (state) => state.files
 }
 
 const actions = {
-    getFileToDownload({ commit }, options) {
+    getFileToDownload({ commit }, filename) {
         console.log("current file,", state.filesToDownload[0])
+        let params = {
+            format: "json",
+            action: "query",
+            iiprop: "mime|mediatype|dimensions|url",
+            prop: "imageinfo",
+            titles: "File:" + state.filesToDownload[0].replace(" ", "_"),
+            origin: "*",
+        };
+
         axios
-            .get("https://picsum.photos/350/350", options)
+            .get("https://commons.wikimedia.org/w/api.php", {
+                headers: {
+                    "User-Agent": "Imagebulk tool",
+                    "Content-Type": "application/json",
+                }, params
+            })
             .then((res) => {
-                commit(SET_IMAGE_URL, res.data);
+                let data = res['data']['query']['pages']
+                let imageData = {}
+
+                for (var key in data) {
+                    imageData = { "title": data[key]['title'].split(":")[1], ...data[key]["imageinfo"][0] }
+                }
+
+                console.log("response data: ", imageData)
+
+                commit("SET_IMAGE_INFO", imageData);
             })
             .catch((err) => console.error(err));
     }
