@@ -1,14 +1,9 @@
 import { createStore } from 'vuex'
+import file from './modules/filedownload'
+import category from './modules/categorydownload'
 
 export default createStore({
-  state: {
-  },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
   modules: {
+    file, category
   }
 })

@@ -2,9 +2,10 @@
   <v-app>
     <v-app-bar
       title="Imagebulk"
-      class="px-12"
-      color="blue-darken-2"
+      class="px-8"
+      color="primary"
       density="flat"
+      elevation="0"
     >
       <div class="d-none d-sm-flex flex-row nav-links align-center pr-8">
         <div @click="$router.push('/')"><span>Home</span></div>
@@ -65,5 +66,9 @@ export default {
   letter-spacing: 2px !important;
   font-size: 25px !important;
   cursor: pointer;
+}
+div.v-counter {
+  color: white !important;
+  opacity: 0.7;
 }
 </style>
