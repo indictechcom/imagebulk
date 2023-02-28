@@ -1,7 +1,16 @@
 <template>
-  <div class="py-5 d-flex justify- align-center position-relative">
+  <div class="py-5 d-flex align-center position-relative">
     <div class="text-area d-flex justify-start align-center">
-      <v-img :src="imageUrl" height="150" alt="" v-if="imageUrl" />
+      <v-img :src="imageUrl" height="150" alt="" v-if="imageUrl">
+        <template v-slot:placeholder>
+          <div class="d-flex align-center justify-center fill-height">
+            <v-progress-circular
+              color="blue-lighten-4"
+              indeterminate
+            ></v-progress-circular>
+          </div>
+        </template>
+      </v-img>
     </div>
   </div>
 </template>
@@ -22,11 +31,15 @@ export default {
   }),
 
   methods: {
-    ...mapActions(["getFileToDownload"]),
+    ...mapActions([
+      "getFileToDownload",
+      "getCategoryToDownload",
+      "getTotalSize",
+    ]),
   },
 
   computed: {
-    ...mapGetters(["getFiles"]),
+    ...mapGetters(["getFiles", "getTag"]),
 
     imageUrl() {
       console.log("imag files: ", this.getFiles);
@@ -45,21 +58,9 @@ export default {
   },
 
   created() {
-    let options = {
-      // responseType: "blob",
-      // onDownloadProgress: (progressEvent) => {
-      //   console.log(progressEvent);
-      //   const progress = (progressEvent.loaded / progressEvent.total) * 100;
-      //   this.progress = progress;
-      // },
-      // headers: {
-      //   "User-Agent": "Imagebulk tool",
-      //   "Content-Type": "application/json",
-      // },
-      // params,
-    };
-
-    this.getFileToDownload(this.filename);
+    if (!Object.values(this.getFiles).indexOf(this.filename) >= 0) {
+      this.getFileToDownload(this.filename);
+    }
   },
 };
 </script>

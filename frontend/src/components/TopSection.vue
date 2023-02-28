@@ -13,14 +13,18 @@
       <tool-form />
     </div>
 
-    <v-row class="mt-4 d-flex justify-space-between" v-if="filesLength > 0">
+    <v-row
+      class="mt-4 mx-1 d-flex justify-space-between"
+      v-if="filesLength > 0"
+    >
       <p class="mb-0">
         {{ filesLength }}
-        {{ filesLength > 1 ? "images" : "image" }} downloading...
+        {{ filesLength > 1 ? "images" : "image" }} loading...
       </p>
 
       <div class="mb-0">
-        Total Size: <span class="text-success font-weight-bold">15MB</span>
+        Total Size:
+        <span class="text-success font-weight-bold">{{ totalSize }}</span>
       </div>
     </v-row>
   </v-container>
@@ -40,10 +44,14 @@ export default {
   methods: {},
 
   computed: {
-    ...mapGetters(["getFileLength"]),
+    ...mapGetters(["getFileLength", "getTotalSize"]),
 
     filesLength() {
       return this.getFileLength ? this.getFileLength : 0;
+    },
+
+    totalSize() {
+      return this.getTotalSize ? this.getTotalSize : "0 KB";
     },
   },
 

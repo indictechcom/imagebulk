@@ -2,6 +2,22 @@
   <v-container class="px-10" id="fileDownloadArea">
     <!-- grid and download-button section -->
 
+    <v-row class="justify-end">
+      <v-btn
+        class="my-5"
+        :loading="loading"
+        :disabled="loading"
+        color="info"
+        @click="load()"
+        >Download
+        <template v-slot:loader>
+          <span class="custom-loader">
+            <v-icon light>mdi-cached</v-icon>
+          </span>
+        </template>
+      </v-btn>
+    </v-row>
+
     <!-- file download area -->
     <v-row v-if="filesToDownload">
       <v-col
@@ -13,19 +29,21 @@
       </v-col>
     </v-row>
 
-    <v-btn
-      class="float-right my-5"
-      :loading="loading"
-      :disabled="loading"
-      color="info"
-      @click="load()"
-      >Download
-      <template v-slot:loader>
-        <span class="custom-loader">
-          <v-icon light>mdi-cached</v-icon>
-        </span>
-      </template>
-    </v-btn>
+    <v-row class="justify-end">
+      <v-btn
+        class="my-5"
+        :loading="loading"
+        :disabled="loading"
+        color="info"
+        @click="load()"
+        >Download
+        <template v-slot:loader>
+          <span class="custom-loader">
+            <v-icon light>mdi-cached</v-icon>
+          </span>
+        </template>
+      </v-btn>
+    </v-row>
   </v-container>
 </template>
 
@@ -47,13 +65,14 @@ export default {
   methods: {
     load() {
       this.loading = true;
-      setTimeout(() => (this.loading = false), 3000);
+      setTimeout(() => {
+        this.$router.push("download");
+        this.loading = false;
+      }, 3000);
     },
   },
 
-  created() {
-    // console.log("current file", this.currentFile());
-  },
+  created() {},
 };
 </script>
 
