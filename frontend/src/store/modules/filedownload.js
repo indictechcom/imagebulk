@@ -1,48 +1,40 @@
 import axios from "axios";
 
-
 const state = {
-    filesToDownload: [],
     imageInfo: {},
-    files: []
+    files: new Set()
 }
 
 const mutations = {
-    SET_FILE_TO_DOWNLOAD(state, payload) {
-        console.log("file to download", payload)
-        state.filesToDownload.unshift(payload);
-    },
-
     SET_IMAGE_INFO(state, payload) {
         state.imageInfo = payload;
-        state.files.unshift(payload)
+        state.files.add(payload)
     }
 }
 
 const getters = {
-    filesToDownload: (state) => state.filesToDownload,
-
-    getFileLength: (state) => state.filesToDownload.length,
-
-    getFiles: (state) => state.files
+    getFiles: (state) => Array.from(state.files)
 }
 
 const actions = {
-    getFileToDownload({ commit }, filename) {
-        console.log("current file,", state.filesToDownload[0])
+
+    getFileToDownload({ commit, dispatch, rootState }, filename_) {
+        let filesArray = Array.from(rootState.filesToDownload)
+        console.log("current file,", filesArray[filesArray.length - 1])
+        let filename = rootState.bulkTag == 'file' ? filesArray[filesArray.length - 1] : filename_
+
         let params = {
             format: "json",
             action: "query",
             iiprop: "mime|mediatype|dimensions|url",
             prop: "imageinfo",
-            titles: "File:" + state.filesToDownload[0].replace(" ", "_"),
+            titles: "File:" + filename?.replace(" ", "_"),
             origin: "*",
         };
 
         axios
             .get("https://commons.wikimedia.org/w/api.php", {
                 headers: {
-                    "User-Agent": "Imagebulk tool",
                     "Content-Type": "application/json",
                 }, params
             })
@@ -57,6 +49,10 @@ const actions = {
                 console.log("response data: ", imageData)
 
                 commit("SET_IMAGE_INFO", imageData);
+
+                commit("SET_IMAGE_DATA", imageData)
+
+                dispatch("getTotalSize");
             })
             .catch((err) => console.error(err));
     }

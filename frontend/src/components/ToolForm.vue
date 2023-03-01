@@ -49,8 +49,7 @@
 </template>
 
 <script>
-import axios from "axios";
-import { mapMutations } from "vuex";
+import { mapMutations, mapActions } from "vuex";
 
 export default {
   data: () => ({
@@ -65,7 +64,13 @@ export default {
   }),
 
   methods: {
-    ...mapMutations(["SET_FILE_TO_DOWNLOAD", "SET_CATEGORY_TO_DOWNLOAD"]),
+    ...mapMutations([
+      "SET_FILE_TO_DOWNLOAD",
+      "SET_CATEGORY_TO_DOWNLOAD",
+      "SET_BULK_TAG",
+    ]),
+
+    ...mapActions(["getCategoryToDownload"]),
 
     scrollToElement(options) {
       const el = document.getElementById("fileDownloadArea");
@@ -87,13 +92,16 @@ export default {
     },
 
     loadFileImage() {
-      this.SET_FILE_TO_DOWNLOAD(this.commonsURL.split("File:")[1].trim());
+      let cleaned = this.commonsURL.split("File:")[1].trim();
+      this.SET_BULK_TAG("file");
+      this.SET_FILE_TO_DOWNLOAD(cleaned);
     },
 
     loadCategoryImages() {
-      this.SET_CATEGORY_TO_DOWNLOAD(
-        this.commonsURL.split("Category:")[1].trim()
-      );
+      let cleaned = this.commonsURL.split("Category:")[1].trim();
+      this.SET_BULK_TAG("category");
+      this.SET_CATEGORY_TO_DOWNLOAD(cleaned);
+      this.getCategoryToDownload(cleaned);
     },
   },
 };
